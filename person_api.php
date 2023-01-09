@@ -35,9 +35,10 @@ if(empty($_GET['class']) || empty($_GET['operation'])) {
 function operations_person($facade) {
    $person = new Person();
 
-   $person->setter_id(1);
+   // $person->setter_id(92);
    $person->setter_firstName('Diego');
    $person->setter_lastName('Maldonado');
+   $person->setter_dtRegister('');
    
    // $person->setter_id(2);
    // $person->setter_firstName('Nicholas');
@@ -65,29 +66,13 @@ function operations_person($facade) {
       } else {
          response(200, "Data Deleted in Data Base", NULL);
       }
-   } else if($_GET['operation'] == 'read') {         
+   } else if($_GET['operation'] == 'read') {
+      $person->setter_id(0);
       $result = $facade->read( $person );
       if(!empty($result->getter_msg())) {
          response(400, $result->getter_msg(), NULL);
-      } else {         
-         response(200, "Data Readed in Data Base", json_encode( $result->getter_entities() ) );
-         // response(200, "Data Readed in Data Base", json_encode( $result->getter_entities()[0] ) );
-         // response(200, "Data Readed in Data Base", json_encode( $result->getter_entities()[0][0] ) );
-
-         // http_response_code(200);
-         // $product_arr = array(
-         //    "id" =>  '$product->id',
-         //    "name" => '$product->name',
-         //    "description" => '$product->description',
-         //    "price" => '$product->price',
-         //    "category_id" => '$product->category_id',
-         //    "category_name" => '$product->category_name'
-         // );
-         // echo json_encode($product_arr);
-
-         // echo json_encode(
-         //   array("message" => "No products found.")
-         // );
+      } else {
+         response(200, "Data Readed in Data Base", json_encode( $result->getter_entities()[0] ) );
       }
    }
 }
