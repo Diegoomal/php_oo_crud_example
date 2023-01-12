@@ -33,21 +33,52 @@ Header set Cache-Control "max-age=600, must-revalidate"
 
 # Em cache para sempre (scripts e folhas de estilo)
 <FilesMatch "\.(js|css)$">
-Header set Cache-Control "max-age=600, must-revalidate"
-Header set Expires "Thu, 15 Apr 2010 20:00:00 GMT"
-Header unset Last-Modified
+  Header set Cache-Control "max-age=600, must-revalidate"
+  Header set Expires "Thu, 15 Apr 2010 20:00:00 GMT"
+  Header unset Last-Modified
 </FilesMatch>
 
 #PAGINAS SIMPLES exemplos de url amigavel
 # RewriteRule ^index/?([a-zA-Z0-9--]+)?/?$ index.php [NC,L]   
 # RewriteRule ^fale-conosco/?([a-zA-Z0-9--]+)?/?$ fale-conosco.php [NC,L]
 # RewriteRule ^trabalhe-conosco/?([a-zA-Z0-9--]+)?/?$ trabalhe-conosco.php [NC,L]
-RewriteRule ^api/([0-9a-zA-Z_-]*)$ api.php
+
+# IMPL 1
+# RewriteRule ^api/([0-9a-zA-Z_-]*)$ api.php
 # RewriteRule ^api/([0-9a-zA-Z_-]*)$ api.php?name=$1 [NC,L]
 # RewriteRule ^api/([0-9a-zA-Z_-]*)$ api.php?class=$person [NC,L]
 # RewriteRule ^api/([0-9a-zA-Z_-]*)$ api.php?class=$person&operation=$operation [NC,L]
+# RewriteRule ^person_api/([0-9a-zA-Z_-]*)$ person_api.php?name=$0 [NC,L]
 
-RewriteRule ^person_api/([0-9a-zA-Z_-]*)$ person_api.php
+# # Acesso:
+# # http://127.0.0.1:81/engsoft     (root_uri)
+# # <root_uri>/api/person/insert
+# # <root_uri>/api/person/update
+# # <root_uri>/api/person/delete/1  (only_one)
+# # <root_uri>/api/person/read      (all)
+# # <root_uri>/api/person/read/1    (only_one)
+
+# IMPL 2
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule ^api/([0-9a-zA-Z_-]*)$ api.php?id=$0 [NC,L]
+# RewriteRule ^api/person/read([0-9a-zA-Z_-]*)$   api.php?class=person&operation=read&id=$0 [NC,L]
+# RewriteRule ^api/person/read/([0-9a-zA-Z_-]*)$  api.php?class=person&operation=read&id=$0 [NC,L]
+RewriteRule ^api/person/insert([0-9a-zA-Z_-]*)$   api.php?class=person&operation=insert [L,NC,QSA]
+RewriteRule ^api/person/update/(\d+)?$            api.php?class=person&operation=update&id=$0 [L,NC,QSA]
+RewriteRule ^api/person/delete/(\d+)?$            api.php?class=person&operation=delete&id=$0 [L,NC,QSA]
+RewriteRule ^api/person/read([0-9a-zA-Z_-]*)$     api.php?class=person&operation=read&id=0 [L,NC,QSA]
+RewriteRule ^api/person/read/(\d+)?$              api.php?class=person&operation=read&id=$0 [L,NC,QSA]
+
+
+
+# # IMPL 3
+# RewriteEngine On
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule ^api/(car|fruit|person)/(insert|update|delete|read)$ api.php [QSA]
+# # RewriteRule ^api/(car|fruit|person)/(insert|update|delete|read)/(\d+)?$ api.php?id=$0 [QSA]
 
 
 # php -- BEGIN cPanel-generated handler, do not edit
